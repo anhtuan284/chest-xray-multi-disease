@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Analysis</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        form { margin-bottom: 20px; }
+        button { background-color: #4CAF50; color: white; padding: 10px 20px; border: none; cursor: pointer; }
+        button:hover { background-color: #45a049; }
+        img { max-width: 100%; height: auto; }
+    </style>
+</head>
+<body>
+    <h1>Image Analysis</h1>
+    <form id="uploadForm">
+        <input type="file" id="fileInput" accept="image/*">
+        <button type="submit">Upload & Analyze</button>
+    </form>
+
+    <div id="message"></div>
+
+    <div id="uploadedImage"></div>
+
+    <div id="gradcamLink"></div>
+
+    <script>
+        const form = document.getElementById('uploadForm');
+        const messageDiv = document.getElementById('message');
+        const uploadedImageDiv = document.getElementById('uploadedImage');
+        const gradcamLinkDiv = document.getElementById('gradcamLink');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                messageDiv.textContent = 'Please select a file';
+                return;
+            }
+
+            messageDiv.textContent = 'Uploading...';
+
+            try {
+                // Upload file to server
+                const formData = new FormData(form);
+                await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                // Get analysis results
+                const response = await fetch('/densenet_predict');
+                const data = await response.json();
+
+                // Display uploaded image
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = reader.result;
+                    uploadedImageDiv.innerHTML = '';
+                    uploadedImageDiv.appendChild(imgElement);
+
+                    // Display GradCAM link
+                    gradcamLinkDiv.innerHTML = '<a href="' + data.link + '">Download GradCAM Images</a>';
+                };
+                reader.readAsDataURL(file);
+
+                messageDiv.textContent = 'Analysis complete!';
+            } catch (error) {
+                console.error('Error:', error);
+                messageDiv.textContent = 'An error occurred. Please try again.';
+            }
+        });
+    </script>
+</body>
+</html>
