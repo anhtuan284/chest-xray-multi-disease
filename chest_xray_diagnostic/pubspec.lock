@@ -126,6 +126,30 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_dropzone:
+    dependency: "direct main"
+    description:
+      name: flutter_dropzone
+      sha256: "032966dfb104180935fd05d83c1fd3e10b83670611fbd75fb1578c65ae788817"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.3"
+  flutter_dropzone_platform_interface:
+    dependency: transitive
+    description:
+      name: flutter_dropzone_platform_interface
+      sha256: b4e2df75364bab2f4c3ca32b87193267d786b6e158c3f345c3a1daeb911d82b9
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.6"
+  flutter_dropzone_web:
+    dependency: transitive
+    description:
+      name: flutter_dropzone_web
+      sha256: e852e07fd216969a1b0d9add717d27ec2b08e7c7d2bfc3ba8c06dc38e956dd26
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.2"
   flutter_lints:
     dependency: "direct dev"
     description:

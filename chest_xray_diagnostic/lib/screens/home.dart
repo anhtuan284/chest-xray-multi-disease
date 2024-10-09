@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
+import 'package:flutter_dropzone/flutter_dropzone.dart';
 import 'dart:typed_data';
 
 class HomeScreen extends StatefulWidget {
@@ -20,7 +21,16 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Chest X-ray Diagnostic')),
+      appBar: AppBar(
+        title: const Text('Chest X-ray Diagnostic'),
+        backgroundColor: Colors.deepPurpleAccent,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {},
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
@@ -31,44 +41,70 @@ class _HomeScreenState extends State<HomeScreen> {
               // Instructions Text
               const Text(
                 'Vui lòng chọn mô hình:',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               const Text(
-                'Đây chỉ là mô hình thử nghiệm, chọn mô hình để tiếp tục...',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+                'Lưu ý: Đây chỉ là mô hình thử nghiệm chưa thông qua chứng nhận của chuyên gia, chọn mô hình để tiếp tục...',
+                style: TextStyle(
+                    fontSize: 16, color: Color.fromARGB(255, 94, 94, 94)),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 30),
 
-              // Dropdown for model selection
-              DropdownButton<String>(
-                items: options.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    selectedOption = newValue!;
-                  });
-                },
-                value: selectedOption,
+              // Dropdown for model selection with icon
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.model_training,
+                      color: Colors.deepPurpleAccent),
+                  const SizedBox(width: 10),
+                  DropdownButton<String>(
+                    items: options.map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedOption = newValue!;
+                      });
+                    },
+                    value: selectedOption,
+                    dropdownColor: Colors.deepPurple[50],
+                    style: const TextStyle(color: Colors.black, fontSize: 16),
+                    icon: const Icon(Icons.arrow_drop_down_circle,
+                        color: Colors.deepPurpleAccent),
+                  ),
+                ],
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 30),
 
               // Button to select an image
               Center(
-                child: ElevatedButton(
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.image, color: Colors.white),
+                  label: isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text('Chọn ảnh',
+                          style: TextStyle(color: Colors.white)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 187, 71, 255),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 12),
+                    textStyle:
+                        const TextStyle(fontSize: 18, color: Colors.white),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                   onPressed: isLoading
                       ? null
                       : () async {
                           await showImagePickerDialog(context);
                         },
-                  child: isLoading
-                      ? const CircularProgressIndicator()
-                      : const Text('Chọn ảnh'),
                 ),
               ),
             ],
