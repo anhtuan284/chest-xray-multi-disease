@@ -1,0 +1,79 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env
+*.env
+*.venv
+
+# Poetry
+poetry.lock
+
+# Pipenv
+Pipfile
+Pipfile.lock
+
+# Pytest cache
+.pytest_cache/
+
+# FastAPI-specific logs and cache
+logs/
+*.log
+*.out
+*.err
+
+# Database files
+*.sqlite3
+*.db
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Migrations (optional, if using Alembic)
+migrations/
+
+# Docker and container-related files
+docker-compose.override.yml
+.Dockerfile.swp
+docker_logs/
+
+# Dependency management
+__pypackages__/
+node_modules/
+
+# Build files
+dist/
+build/
+*.egg-info/
+
+# Jupyter Notebook checkpoints (if used)
+.ipynb_checkpoints/
+
+# Static and media files (if using FastAPI for file uploads)
+staticfiles/
+mediafiles/
+uploads/
+
+# Gunicorn logs
+gunicorn.log
+gunicorn.error.log
+
+# Coverage reports
+.coverage
+htmlcov/
+
+# MyPy cache
+.mypy_cache/
+
+# Security
+secrets.json
+
+# Other OS-specific files
+.DS_Store
+Thumbs.db
