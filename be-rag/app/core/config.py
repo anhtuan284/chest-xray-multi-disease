@@ -13,8 +13,8 @@ class AppSettings(BaseSettings):
     environment: str = Field("development", description="Environment the application is running in")
 
     # Server settings
-    server_host: str = Field("0.0.0.0", description="Host to run the server on")
-    server_port: int = Field(8033, description="Port to run the server on")
+    server_host: str = Field(..., description="Host to run the server on")
+    server_port: int = Field(..., description="Port to run the server on")
 
     # Data directory settings 
     documents_dir: str = Field("data/documents/", description="Path to the documents directory")
@@ -26,14 +26,14 @@ class AppSettings(BaseSettings):
     log_stdout: bool = Field(True, description="Whether to log to stdout")
 
     # Database settings
-    database_url: str = Field("postgresql://postgres:141203@localhost:5432/chestxray", description="Database connection URL")
-    vector_table_name: str = Field("chest_docs_collection", description="Name of the table to store vector embeddings in Postgres")
+    vector_database_url: str = Field(..., description="Database connection URL")
+    vector_table_name: str = Field(..., description="Name of the table to store vector embeddings in Postgres")
 
     # Embedding & LLM settings
-    embedding_model_name: str = Field("BAAI/bge-small-en-v1.5", description="Name or path of the embedding model")
+    embedding_model_name: str = Field(..., description="Name or path of the embedding model")
     embedding_cache_folder: str = Field("./cache", description="Cache directory for embeddings")
-    ollama_model_name: str = Field("llama3", description="Name of the ollama model")
-    ollama_server_url: str = Field("https://labrador-fluent-buzzard.ngrok-free.app/", description="URL of the Ollama server")
+    ollama_model_name: str = Field(..., description="Name of the ollama model")
+    ollama_server_url: str = Field(..., description="URL of the Ollama server")
     similarity_top_k: int = Field(10, description="The `similarity_top_k` of query engine")
 
     class Config:
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     print(f"Documents Directory: {settings.documents_dir}")
     print(f"Embeddings Dir: {settings.embeddings_dir}")
     print(f"Log Level: {settings.log_level}")
-    print(f"Database URL: {settings.database_url}")
+    print(f"Database URL: {settings.vector_database_url}")
     print(f"Vector Table Name: {settings.vector_table_name}")
     print(f"Embedding Model Name: {settings.embedding_model_name}")
     print(f"Embedding Cache Folder: {settings.embedding_cache_folder}")
