@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  api:
+    build: .
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    volumes:
+      - ./data:/app/data
+      - ./.cache:/app/.cache
+    environment:
+      - SERVER_HOST=${SERVER_HOST}
+      - SERVER_PORT=${SERVER_PORT}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USERNAME=${DATABASE_USERNAME}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - VECTOR_DATABASE_URL=postgresql://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@db:5432/${DATABASE_NAME}
+      - VECTOR_TABLE_NAME=${VECTOR_TABLE_NAME}
+      - EMBEDDING_MODEL_NAME=${EMBEDDING_MODEL_NAME}
+      - OLLAMA_MODEL_NAME=${OLLAMA_MODEL_NAME}
+      - OLLAMA_SERVER_URL=${OLLAMA_SERVER_URL}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: ankane/pgvector:latest
+    container_name: pgvector-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_USER=${DATABASE_USERNAME}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/pgdata
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    name: pgvector-data

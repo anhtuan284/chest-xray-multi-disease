@@ -1,0 +1,36 @@
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.log
+.coverage
+htmlcov
+dist
+build
+*.egg-info
+
+# Development
+.git
+.gitignore
+.pytest_cache
+notebooks/
+tests/
+docs/
+
+# Environment
+.env
+venv/
+.venv/
+env/
+
+# Caches
+.cache/
+cache/
+*.cache
+
+# Data (mount as volume instead)
+data/
+*.pdf
+*.json
