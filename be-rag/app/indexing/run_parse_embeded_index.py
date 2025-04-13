@@ -41,7 +41,7 @@ def _clear_existing_index():
     """
     Clears the existing index in the database.
     """
-    conn = psycopg2.connect(settings.database_url)
+    conn = psycopg2.connect(settings.vector_database_url)
     cur = conn.cursor()
     table_name = "data_" + settings.vector_table_name
     cur.execute(f"TRUNCATE {table_name};")

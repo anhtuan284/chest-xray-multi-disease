@@ -40,7 +40,7 @@ class IndexManager:
 
     def _is_pg_vector_store_exists(self):
         """Check if if vector store table exists"""
-        conn = psycopg2.connect(settings.database_url)
+        conn = psycopg2.connect(settings.vector_database_url)
         cur = conn.cursor()
         cur.execute(f"SELECT EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = '{self._get_pg_table_name()}');")
         exists = cur.fetchone()[0]
@@ -49,14 +49,20 @@ class IndexManager:
         return exists
 
     def load_index(self):     
+        """Load or create vector store index."""
         if self._is_pg_vector_store_exists():
-          logger.info("Loading index from vector store")
-          self.index = VectorStoreIndex.from_vector_store(self.vector_store)
-          return
+            logger.info("Loading index from existing vector store")
+            self.index = VectorStoreIndex.from_vector_store(self.vector_store)
+            return
         
-        raise Exception(f"Vector store table does not exist in database={settings.database_url}"
-                        f" cfg_table={settings.vector_table_name}"
-                        f" pg_table={self._get_pg_table_name()}")
+        logger.info("Vector store table does not exist. Creating empty index...")
+        # Create empty index that will create the table
+        self.index = VectorStoreIndex.from_documents(
+            documents=[],
+            storage_context=self.storage_context,
+            show_progress=True,
+        )
+        logger.info("Empty index created successfully")
 
     def build_index(self, documents: list[Document]):
         """
@@ -152,16 +158,22 @@ def _create_filters(contains: dict[str, list[str]] = None) -> MetadataFilters:
 
 def _setup_vector_store(settings: AppSettings) -> PGVectorStore:
     """Initialize the vector store."""
-    logger.info(f"Initializing PGVectorStore url={settings.database_url}"
+    logger.info(f"Initializing PGVectorStore url={settings.vector_database_url}"
                 f" table_name={settings.vector_table_name}")
     try:
-        conn = psycopg2.connect(settings.database_url)
+        # Enable autocommit and create extension if not exists
+        conn = psycopg2.connect(settings.vector_database_url)
+        conn.autocommit = True
+        with conn.cursor() as cur:
+            # Create vector extension if not exists
+            cur.execute("CREATE EXTENSION IF NOT EXISTS vector;")
         conn.close()
+        
     except psycopg2.Error as e:
         logger.error(f"Error connecting to database: {e}")
         raise
     
-    url = make_url(settings.database_url)
+    url = make_url(settings.vector_database_url)
     out = PGVectorStore.from_params(
       database=url.database,
       host=url.host,
@@ -170,6 +182,7 @@ def _setup_vector_store(settings: AppSettings) -> PGVectorStore:
       password=url.password,
       table_name=settings.vector_table_name,
       embed_dim=384,  # change to our embedding dimension
+      hybrid_search=True, # Enable hybrid searchs
       hnsw_kwargs={
           "hnsw_m": 16,
           "hnsw_ef_construction": 64,
