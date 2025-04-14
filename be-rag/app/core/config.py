@@ -26,6 +26,9 @@ class AppSettings(BaseSettings):
     log_stdout: bool = Field(True, description="Whether to log to stdout")
 
     # Database settings
+    database_name: str = Field(..., description="Database name")
+    database_username: str = Field(..., description="Database username") 
+    database_password: str = Field(..., description="Database password")
     vector_database_url: str = Field(..., description="Database connection URL")
     vector_table_name: str = Field(..., description="Name of the table to store vector embeddings in Postgres")
 
@@ -35,6 +38,16 @@ class AppSettings(BaseSettings):
     ollama_model_name: str = Field(..., description="Name of the ollama model")
     ollama_server_url: str = Field(..., description="URL of the Ollama server")
     similarity_top_k: int = Field(10, description="The `similarity_top_k` of query engine")
+
+    # Redis settings
+    redis_url: str = Field(..., description="Redis connection URL")
+    redis_host: str = Field(..., description="Redis host address")
+    redis_username: str = Field(..., description="Redis username")
+    redis_password: str = Field(..., description="Redis password")
+
+    # File upload settings
+    max_file_size: int = Field(10 * 1024 * 1024, description="Maximum file size in bytes (10MB)")
+    allowed_file_types: list[str] = Field(["application/pdf"], description="List of allowed MIME types")
 
     class Config:
       """Pydantic config."""

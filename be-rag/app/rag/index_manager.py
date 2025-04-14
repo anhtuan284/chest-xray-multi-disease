@@ -1,7 +1,8 @@
 import logging
-from typing import Callable, Dict
+from typing import Callable, Dict, List
 import psycopg2
 from sqlalchemy import make_url
+from redis import Redis
 
 from llama_index.vector_stores.postgres import PGVectorStore
 from llama_index.llms.ollama import Ollama
@@ -9,6 +10,14 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.core import StorageContext, VectorStoreIndex, Settings, Document
 from llama_index.core.vector_stores import MetadataFilters, MetadataFilter, FilterOperator, FilterCondition
 from llama_index.core.query_engine import BaseQueryEngine
+from llama_index.core.ingestion import (
+    DocstoreStrategy,
+    IngestionPipeline,
+    IngestionCache
+)
+from llama_index.storage.kvstore.redis import RedisKVStore as RedisCache
+from llama_index.storage.docstore.postgres import PostgresDocumentStore
+from llama_index.core.node_parser import SentenceSplitter
 
 from app.utils.logging import setup_logging
 from app.core.config import settings, AppSettings
@@ -31,6 +40,12 @@ class IndexManager:
         self.vector_store = _setup_vector_store(settings)
         self.storage_context = _setup_storage_context(settings, self.vector_store)
         logger.debug("Vector store and storage context initialized successfully")
+        
+        logger.debug("Initializing document store and Redis cache")
+        self.docstore = self._setup_docstore(settings)
+        self.cache_store = self._setup_cache_store(settings)
+        self.pipeline = self._setup_ingestion_pipeline()
+        logger.debug("Document store and Redis cache initialized successfully")
         
         # Client has to call load_index() to load the index
         self.index = None
@@ -64,25 +79,68 @@ class IndexManager:
         )
         logger.info("Empty index created successfully")
 
-    def build_index(self, documents: list[Document]):
+    def _setup_docstore(self, settings: AppSettings) -> PostgresDocumentStore:
+        """Initialize PostgreSQL document store"""
+        url = make_url(settings.vector_database_url)
+        return PostgresDocumentStore.from_params(
+            database=url.database,
+            host=url.host,
+            password=url.password,
+            port=url.port,
+            user=url.username,
+            table_name="docstore",
+        )
+
+    def _setup_cache_store(self, settings: AppSettings) -> IngestionCache:
+        """Initialize Redis cache store"""
+        redis_client = Redis.from_url(settings.redis_url)
+        return IngestionCache(
+            cache=RedisCache.from_redis_client(redis_client),
+            collection=f"{settings.vector_table_name}_ingestion_cache",
+        )
+
+    def _setup_ingestion_pipeline(self) -> IngestionPipeline:
+        """Initialize ingestion pipeline"""
+        return IngestionPipeline(
+            transformations=[self.embed_model],
+            vector_store=self.vector_store,
+            docstore=self.docstore,
+            cache=self.cache_store,
+            docstore_strategy=DocstoreStrategy.UPSERTS_AND_DELETE
+        )
+
+    def build_index(self, documents: List[Document]):
         """
-        Builds the vector index from the given documents.
+        Builds the vector index from the given documents using the ingestion pipeline.
         """
         try:
-            logger.info("Starting vector index building...")
-            self.index = VectorStoreIndex.from_documents(
+            logger.info("Starting document ingestion...")
+            
+            # Split documents into nodes using SentenceSplitter
+            parser = SentenceSplitter()
+            nodes = parser.get_nodes_from_documents(documents)
+            logger.info(f"Created {len(nodes)} nodes from {len(documents)} documents")
+            
+            # Run ingestion pipeline on the nodes
+            ingested_nodes = self.pipeline.run(
                 documents=documents,
-                storage_context=self.storage_context,
-                show_progress=True,
+                nodes=nodes,  # Pass pre-split nodes
+                show_progress=True
             )
-            # TODO(hails) Refresh changed documents only
-            self.index.update_ref_doc
+            logger.info(f"Ingested {len(ingested_nodes)} nodes successfully")
 
-            logger.info("Vector index built successfully.")
+            # Create/update index with the new nodes
+            self.index = VectorStoreIndex.from_vector_store(
+                self.vector_store,
+                storage_context=self.storage_context,
+            )
+            logger.info("Vector index updated successfully")
+            
+            return len(ingested_nodes)
         except Exception as e:
-            logger.error(f"Error building vector index: {e}")
+            logger.error(f"Error during document ingestion: {e}")
             raise
-        
+
     def update_nodes_metadata(
         self,
         filter_key: str,
