@@ -1,3 +1,4 @@
+import textwrap
 from fastapi import FastAPI
 import uvicorn
 
@@ -10,7 +11,30 @@ from app.utils.logging import setup_logging
 # Configure logging
 logger = setup_logging(__name__)
 
-app = FastAPI()
+APP_DESCRIPTION = """
+    API for searching and managing chest X-ray related medical documents.
+    ### Features
+    * Search documents using RAG technology
+    * Upload and manage PDF documents
+    * Vietnamese language support
+    """
+
+app = FastAPI(
+    title="Chest X-Ray Document Search API",
+    description=textwrap.dedent(APP_DESCRIPTION),
+    version="1.0.0",
+    openapi_tags=[
+        {
+            "name": "Search",
+            "description": "Search operations using RAG (Retrieval Augmented Generation)",
+        },
+        {
+            "name": "Documents",
+            "description": "Operations for managing PDF documents",
+        },
+    ]
+)
+
 app.include_router(endpoints.router)
 
 # Instantiate Index Manager, will be injected by dependencies
