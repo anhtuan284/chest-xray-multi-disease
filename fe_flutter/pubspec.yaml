@@ -1,0 +1,167 @@
+name: fe_flutter
+description: A chest disease prediction and searching medical documents app.
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  intl: ^0.18.1
+
+  # State management
+  flutter_riverpod: ^2.3.6
+  riverpod_annotation: ^2.1.1
+
+  # Data handling
+  built_value: ^8.6.1
+  built_collection: ^5.1.1
+  json_annotation: ^4.8.1
+
+  # Navigation
+  go_router: ^10.0.0
+
+  # Storage
+  shared_preferences: ^2.2.0
+  sqflite: ^2.3.0
+
+  # UI
+  dotted_border: ^2.1.0
+  google_fonts: ^5.1.0
+  flutter_svg: ^2.0.7
+  lottie: ^2.6.0
+  flutter_colorpicker: ^1.1.0
+  audioplayers: ^6.2.0
+  path_provider: ^2.1.5
+  web: ^1.1.0
+  file_picker: ^9.0.0
+  path: ^1.8.3
+  permission_handler: ^11.4.0
+  flutter_native_splash: ^2.3.2
+  logging: ^1.3.0
+  fl_chart: ^0.65.0
+  flutter_animate: ^4.5.2
+  flutter_carousel_slider: ^1.1.0
+  collection: ^1.19.1
+  uuid: ^3.0.7
+  universal_html: ^2.2.4
+  device_info_plus: ^11.2.2
+  dio: ^5.8.0+1
+
+  # This package is used for thread-safe operations in Dart.
+  synchronized: ^3.1.0
+
+  # Game engine
+  flame: ^1.8.0
+  flame_audio: ^2.11.2
+
+  # Cloud Firestore
+  cloud_firestore: ^5.6.6
+  firebase_core: ^3.13.0
+
+  # Package Info Plus
+  package_info_plus: ^4.1.0
+
+  # Connectivity
+  connectivity_plus: ^5.0.2
+
+  # URL Launcher
+  url_launcher: ^6.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  build_runner: ^2.4.6
+  built_value_generator: ^8.6.1
+  riverpod_generator: ^2.2.3
+  json_serializable: ^6.7.1
+  flutter_lints: ^2.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/logos/
+    - assets/animations/
+    - assets/images/ai_avatar.png
+  fonts:
+    - family: ArchivoExpanded
+      fonts:
+        - asset: assets/fonts/Archivo_Expanded-BoldItalic.ttf
+          style: italic
+          weight: 700
+
+    - family: LexendMega
+      fonts:
+        - asset: assets/fonts/LexendMega-Bold.ttf
+          weight: 700
+
+    - family: PublicSans
+      fonts:
+        - asset: assets/fonts/PublicSans-Bold.ttf
+          weight: 700
+
+    - family: MabryPro
+      fonts:
+        - asset: assets/fonts/MabryPro-Bold.ttf
+          weight: 700
+
+    - family: AnonymousPro
+      fonts:
+        - asset: assets/fonts/AnonymousPro-Regular.ttf
+        - asset: assets/fonts/AnonymousPro-Bold.ttf
+          weight: 700
+
+    - family: Angkor
+      fonts:
+        - asset: assets/fonts/Angkor-Regular.ttf
+
+# Flutter Native Splash configuration
+flutter_native_splash:
+  color: "#FFFFFF"
+  image: assets/logos/logo-02.png
+  color_dark: "#FFFFFF"
+  image_dark: assets/logos/logo-02.png
+
+  android: true
+  ios: true
+  web: true # Enable web support
+
+  # Web specific configuration
+  web_image_mode: center # Options: center, contain, stretch, cover
+
+  # Optional: You can specify a different image for web if needed
+  # image_web: assets/logos/logo-02.png
+
+  # Optional: You can specify a different background color for web
+  # color_web: "#FFFFFF"
+
+  android_12:
+    image: assets/logos/logopadding-02.png
+    icon_background_color: "#FFFFFF"
+    image_dark: assets/logos/logopadding-02.png
+    icon_background_color_dark: "#121212"
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/logos/logo-02.png" # Used for iOS and legacy Android
+  min_sdk_android: 21
+  remove_alpha_ios: true
+  adaptive_icon_background: "#FFFFFF"
+
+  # Use padded logo for Android foreground layer
+  adaptive_icon_foreground: "assets/logos/logopadding-02.png" # Use this padded version
+
+  android_name: "fe_fluttere"
+  ios_name: "fe_fluttere"
+  web:
+    generate: true
+    image_path: "assets/logos/logo-02.png"
+    background_color: "#FFFFFF"
+    theme_color: "#FFFFFF"
+  windows:
+    generate: false
+  macos:
+    generate: false
