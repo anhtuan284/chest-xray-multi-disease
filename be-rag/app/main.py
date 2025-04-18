@@ -1,5 +1,6 @@
 import textwrap
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 from app.api import endpoints
@@ -33,6 +34,15 @@ app = FastAPI(
             "description": "Operations for managing PDF documents",
         },
     ]
+)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins in development
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
 )
 
 app.include_router(endpoints.router)
