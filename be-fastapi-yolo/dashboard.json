@@ -77,7 +77,7 @@
                     },
                     "editorMode": "builder",
                     "exemplar": false,
-                    "expr": "sum(app_request_count_total{job=\"mediscan-api\"})",
+                    "expr": "sum(app_request_count_total{job=\"fastapi-yolo\"})",
                     "format": "time_series",
                     "instant": false,
                     "interval": "",
@@ -500,7 +500,7 @@
                         "uid": "ceb75a44-8902-415c-8ccb-e25c76c63f15"
                     },
                     "editorMode": "code",
-                    "expr": "{job=\"mediscan-api\"}",
+                    "expr": "{job=\"fastapi-yolo\"}",
                     "instant": false,
                     "range": true,
                     "refId": "A"
@@ -690,7 +690,7 @@
     "style": "dark",
     "tags": [
         "fastapi",
-        "mediscan"
+        "chestscan"
     ],
     "templating": {
         "list": []
@@ -701,7 +701,7 @@
     },
     "timepicker": {},
     "timezone": "",
-    "title": "MediScan API Monitoring",
+    "title": "Chest X-ray Scans API Monitoring",
     "uid": "ac4e7f51-39ed-4529-934d-4f00f4b705d0",
     "version": 6,
     "weekStart": ""
