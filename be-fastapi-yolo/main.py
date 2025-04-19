@@ -13,7 +13,7 @@ from utils.metrics import metrics_middleware, metrics_endpoint
 # Initialize model manager
 model_manager = ModelManager()
 
-app = FastAPI(title="MediScan API", description="Medical image analysis using YOLO models")
+app = FastAPI(title="Chest Xray YOLO API", description="Medical image analysis using YOLO models")
 
 # Add middlewares
 app.middleware("http")(metrics_middleware)

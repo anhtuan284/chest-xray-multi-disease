@@ -100,9 +100,12 @@ class IndexManager:
         )
 
     def _setup_ingestion_pipeline(self) -> IngestionPipeline:
-        """Initialize ingestion pipeline"""
+        """Initialize ingestion pipeline with proper embedding handling"""
         return IngestionPipeline(
-            transformations=[self.embed_model],
+            transformations=[
+                SentenceSplitter(),  # First split into nodes
+                self.embed_model,     # Then calculate embeddings
+            ],
             vector_store=self.vector_store,
             docstore=self.docstore,
             cache=self.cache_store,
@@ -116,15 +119,9 @@ class IndexManager:
         try:
             logger.info("Starting document ingestion...")
             
-            # Split documents into nodes using SentenceSplitter
-            parser = SentenceSplitter()
-            nodes = parser.get_nodes_from_documents(documents)
-            logger.info(f"Created {len(nodes)} nodes from {len(documents)} documents")
-            
-            # Run ingestion pipeline on the nodes
+            # Pipeline now handles node splitting internally
             ingested_nodes = self.pipeline.run(
-                documents=documents,
-                nodes=nodes,  # Pass pre-split nodes
+                documents=documents,  # Pass documents directly
                 show_progress=True
             )
             logger.info(f"Ingested {len(ingested_nodes)} nodes successfully")
@@ -139,6 +136,36 @@ class IndexManager:
             return len(ingested_nodes)
         except Exception as e:
             logger.error(f"Error during document ingestion: {e}")
+            raise
+
+    def sync_index(self, documents: List[Document]):
+        """
+        Syncs the index with the current document set, letting the pipeline handle updates.
+        """
+        try:
+            logger.info("Starting document sync...")
+            
+            # Load or create index if not loaded
+            if not self.index:
+                self.load_index()
+            
+            # Let pipeline handle everything - splitting, embedding, and syncing
+            ingested_nodes = self.pipeline.run(
+                documents=documents,
+                show_progress=True
+            )
+            logger.info(f"Processed {len(ingested_nodes)} nodes")
+            
+            # Refresh index
+            self.index = VectorStoreIndex.from_vector_store(
+                self.vector_store,
+                storage_context=self.storage_context,
+            )
+            
+            logger.info("Index sync completed successfully")
+            
+        except Exception as e:
+            logger.error(f"Error during index sync: {e}")
             raise
 
     def update_nodes_metadata(

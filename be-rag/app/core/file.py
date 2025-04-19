@@ -6,6 +6,7 @@ from typing import List
 from app.api.models import DocumentFile, UploadResponse
 from app.core.config import settings
 from app.utils.logging import setup_logging
+from app.indexing.run_parse_embeded_index import sync_documents
 
 logger = setup_logging(__name__)
 
@@ -91,6 +92,9 @@ class FileService:
             
             with dest.open("wb") as buffer:
                 buffer.write(file.file.read())
+            
+            # Sync index after adding new document
+            sync_documents(force_rebuild=False)
             
             logger.info(f"Successfully saved file: {file.filename}")
             return UploadResponse(

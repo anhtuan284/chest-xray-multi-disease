@@ -1,7 +1,7 @@
 version: "3"
 
 services:
-  api:
+  fastapi-yolo:
     build:
       context: ./be-fastapi-yolo
     ports:
@@ -9,6 +9,9 @@ services:
     volumes:
       - ./be-fastapi-yolo:/app
     environment:
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
       - TZ=UTC
     restart: unless-stopped
 
@@ -24,6 +27,7 @@ services:
       - TZ=UTC
     volumes:
       - ./be-fastapi-cnn/models:/app/models
+      - cnn-data:/app/data  # Add persistent volume for data
     restart: unless-stopped
 
   prometheus:
@@ -60,3 +64,4 @@ services:
 volumes:
   prometheus-data:
   grafana-data:
+  cnn-data:  # Add this volume

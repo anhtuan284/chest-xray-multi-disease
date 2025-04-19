@@ -1,11 +1,12 @@
 import io
 import zipfile
+import os
 
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 
-from PIL import ImageDraw, ImageFont
+from PIL import ImageDraw, ImageFont, Image
 
 from keras._tf_keras.keras.applications.densenet import preprocess_input
 from keras._tf_keras.keras.preprocessing.image import img_to_array, array_to_img
@@ -64,36 +65,64 @@ def add_text_to_image(image, text, font_size=40):
 
 
 def get_img_array_from_memory(img, size):
+    """
+    Convert PIL image to preprocessed numpy array ready for the model
+    """
+    # Ensure img is in RGB mode (3 channels)
+    if img.mode != 'RGB':
+        img = img.convert('RGB')
+    
+    # Resize the image
     img = img.resize(size)
+    
+    # Convert to array and add batch dimension
     img_array = img_to_array(img)
     img_array = np.expand_dims(img_array, axis=0)
+    
+    # Preprocess for DenseNet
     return preprocess_input(img_array)
 
 
-def process_and_generate_images_from_memory(img, model, last_conv_layer_name, labels, top=3):
-    img_array = get_img_array_from_memory(img, size=(224, 224))
-    preds = model.predict(img_array)
-    top_indices = preds[0].argsort()[-top:][::-1]
+def process_and_generate_images_from_memory(img, model, last_conv_layer_name, labels, top=3, font_size=40):
+    """Process image and generate GradCAM visualizations with optional font size."""
+    try:
+        # Ensure image is in RGB mode
+        if img.mode != 'RGB':
+            img = img.convert('RGB')
+        
+        # Get preprocessed image array
+        img_array = get_img_array_from_memory(img, size=(224, 224))
+        
+        # Get model predictions
+        preds = model.predict(img_array)
+        top_indices = preds[0].argsort()[-top:][::-1]
 
-    images = []
+        images = []
 
-    for index in top_indices[:3]:
-        disease_name = labels[index]
-        confidence = preds[0][index] * 100  # Convert to percentage
+        for index in top_indices[:3]:
+            disease_name = labels[index]
+            confidence = preds[0][index] * 100  # Convert to percentage
 
-        # Generate heatmap
-        heatmap = make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=index)
+            # Generate heatmap
+            heatmap = make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=index)
 
-        # Generate Grad-CAM image
-        superimposed_img = display_gradcam(img_to_array(img), heatmap)
+            # Generate Grad-CAM image - convert to RGB first
+            rgb_img = img_to_array(img)
+            superimposed_img = display_gradcam(rgb_img, heatmap)
 
-        # Add disease name and confidence score to the image
-        text = f"{disease_name}: {confidence:.2f}%"
-        final_image = add_text_to_image(superimposed_img, text)
+            # Add disease name and confidence score to the image
+            text = f"{disease_name}: {confidence:.2f}%"
+            final_image = add_text_to_image(superimposed_img, text, font_size=font_size)
 
-        images.append(final_image)
+            images.append(final_image)
 
-    return images
+        return images
+    except Exception as e:
+        # Log the error for debugging
+        import traceback
+        print(f"Error in process_and_generate_images_from_memory: {e}")
+        print(traceback.format_exc())
+        raise
 
 
 def save_image_to_memory(image, fmt='JPEG'):
