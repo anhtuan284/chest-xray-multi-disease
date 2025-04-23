@@ -2,11 +2,14 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
-class ImageViewerDialog extends StatelessWidget {
+import '../../../core/services/image_picker_service.dart';
+import '../../../features/prediction/presentation/prediction_screen.dart';
+
+class PatientImageViewerDialog extends StatelessWidget {
   final Uint8List imageSource;
   final String title;
 
-  const ImageViewerDialog({
+  const PatientImageViewerDialog({
     super.key,
     required this.imageSource,
     required this.title,
@@ -53,7 +56,42 @@ class ImageViewerDialog extends StatelessWidget {
               ),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ElevatedButton.icon(
+              onPressed: () => _navigateToPredictionScreen(context),
+              icon: const Icon(Icons.analytics),
+              label: const Text('Analyse this image'),
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 48),
+                backgroundColor: Theme.of(context).primaryColor,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+            ),
+          ),
         ],
+      ),
+    );
+  }
+
+  void _navigateToPredictionScreen(BuildContext context) {
+    // Create ImageResult from the image bytes
+    final imageResult = ImageResult(
+      bytes: imageSource,
+      name: title,
+      mimeType: 'image/jpeg', // Assuming JPEG for simplicity
+    );
+
+    // Close the dialog
+    Navigator.of(context).pop();
+
+    // Navigate to prediction screen with the image
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => PredictionScreen(initialImage: imageResult),
       ),
     );
   }

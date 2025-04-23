@@ -9,7 +9,9 @@ import '../../../core/services/prediction_service.dart';
 import 'image_viewer_dialog.dart';
 
 class PredictionScreen extends StatefulWidget {
-  const PredictionScreen({super.key});
+  final ImageResult? initialImage;
+
+  const PredictionScreen({super.key, this.initialImage});
 
   @override
   State<PredictionScreen> createState() => _PredictionScreenState();
@@ -39,6 +41,14 @@ class _PredictionScreenState extends State<PredictionScreen> {
         'multiple disease categories, providing heatmap visualizations that '
         'highlight areas contributing to the diagnosis.'
   };
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialImage != null) {
+      _selectedImageResult = widget.initialImage;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

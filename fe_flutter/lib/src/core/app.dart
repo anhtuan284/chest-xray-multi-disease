@@ -10,30 +10,30 @@ import 'services/app_lifecycle_service.dart';
 import 'theme/app_theme.dart';
 
 /// Main application widget
-class fe_flutterApp extends ConsumerStatefulWidget {
-  const fe_flutterApp({super.key});
+class ChestScanApp extends ConsumerStatefulWidget {
+  const ChestScanApp({super.key});
 
   @override
-  ConsumerState<fe_flutterApp> createState() => _fe_flutterAppState();
+  ConsumerState<ChestScanApp> createState() => _ChestScanAppState();
 }
 
-class _fe_flutterAppState extends ConsumerState<fe_flutterApp>
+class _ChestScanAppState extends ConsumerState<ChestScanApp>
     with WidgetsBindingObserver {
   bool _isReady = false;
   late final Future<void> _initFuture;
-  final _log = AppLogger.getLogger('fe_flutterApp');
+  final _log = AppLogger.getLogger('ChestScanApp');
 
   @override
   void initState() {
     super.initState();
-    _log.info('Initializing fe_flutterApp');
+    _log.info('Initializing ChestScanApp');
     WidgetsBinding.instance.addObserver(this);
     _initFuture = _initializeApp();
   }
 
   @override
   void dispose() {
-    _log.info('Disposing fe_flutterApp');
+    _log.info('Disposing ChestScanApp');
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }

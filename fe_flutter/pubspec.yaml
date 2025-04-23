@@ -1,5 +1,5 @@
 name: fe_flutter
-description: A chest disease prediction and searching medical documents app.
+description: A comprehensive chest X-ray analysis tool with disease detection capabilities.
 version: 1.0.0+1
 
 environment:
@@ -161,8 +161,8 @@ flutter_launcher_icons:
   # Use padded logo for Android foreground layer
   adaptive_icon_foreground: "assets/logos/logopadding-02.png" # Use this padded version
 
-  android_name: "fe_fluttere"
-  ios_name: "fe_fluttere"
+  android_name: "ChestScan"
+  ios_name: "ChestScan"
   web:
     generate: true
     image_path: "assets/logos/logo-02.png"
