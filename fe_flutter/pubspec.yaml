@@ -26,6 +26,9 @@ dependencies:
   shared_preferences: ^2.2.0
   sqflite: ^2.3.0
 
+  # Environment variables
+  flutter_dotenv: ^5.1.0
+
   # UI
   dotted_border: ^2.1.0
   google_fonts: ^5.1.0
@@ -92,6 +95,7 @@ flutter:
     - assets/logos/
     - assets/animations/
     - assets/images/ai_avatar.png
+    - .env
   fonts:
     - family: ArchivoExpanded
       fonts:
@@ -138,12 +142,6 @@ flutter_native_splash:
   # Web specific configuration
   web_image_mode: center # Options: center, contain, stretch, cover
 
-  # Optional: You can specify a different image for web if needed
-  # image_web: assets/logos/logo-02.png
-
-  # Optional: You can specify a different background color for web
-  # color_web: "#FFFFFF"
-
   android_12:
     image: assets/logos/logopadding-02.png
     icon_background_color: "#FFFFFF"
@@ -157,12 +155,7 @@ flutter_launcher_icons:
   min_sdk_android: 21
   remove_alpha_ios: true
   adaptive_icon_background: "#FFFFFF"
-
-  # Use padded logo for Android foreground layer
-  adaptive_icon_foreground: "assets/logos/logopadding-02.png" # Use this padded version
-
-  android_name: "ChestScan"
-  ios_name: "ChestScan"
+  adaptive_icon_foreground: "assets/logos/logopadding-02.png" # Use padded logo for Android
   web:
     generate: true
     image_path: "assets/logos/logo-02.png"
