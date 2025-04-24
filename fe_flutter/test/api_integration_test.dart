@@ -45,7 +45,6 @@ void main() {
 
       if (!File(testImagePath).existsSync()) {
         fail('Test image not found at $testImagePath');
-        return;
       }
 
       try {
@@ -71,7 +70,6 @@ void main() {
 
       if (!File(testImagePath).existsSync()) {
         fail('Test image not found at $testImagePath');
-        return;
       }
 
       try {
