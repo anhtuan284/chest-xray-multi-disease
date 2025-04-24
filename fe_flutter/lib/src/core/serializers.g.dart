@@ -12,6 +12,12 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..add(DiseaseSummaryResponse.serializer)
       ..add(DocumentFile.serializer)
       ..add(ImageAsset.serializer)
+      ..add(MediaFile.serializer)
+      ..add(MediaFormat.serializer)
+      ..add(MetaData.serializer)
+      ..add(Pagination.serializer)
+      ..add(Patient.serializer)
+      ..add(PatientResponse.serializer)
       ..add(SearchPreferences.serializer)
       ..add(SearchRequest.serializer)
       ..add(SearchResponse.serializer)
@@ -19,6 +25,15 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..add(UserSetting.serializer)
       ..add(WeeklyStatsData.serializer)
       ..add(WeeklyStatsResponse.serializer)
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(MediaFile)]),
+          () => new ListBuilder<MediaFile>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(MediaFile)]),
+          () => new ListBuilder<MediaFile>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(Patient)]),
+          () => new ListBuilder<Patient>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(String)]),
           () => new ListBuilder<String>())
@@ -36,6 +51,10 @@ Serializers _$serializers = (new Serializers().toBuilder()
           const FullType(
               BuiltMap, const [const FullType(String), const FullType(int)]),
           () => new MapBuilder<String, int>())
+      ..addBuilderFactory(
+          const FullType(BuiltMap,
+              const [const FullType(String), const FullType(MediaFormat)]),
+          () => new MapBuilder<String, MediaFormat>())
       ..addBuilderFactory(
           const FullType(
               BuiltMap, const [const FullType(String), const FullType(int)]),

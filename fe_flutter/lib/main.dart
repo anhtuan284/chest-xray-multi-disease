@@ -1,20 +1,21 @@
-import 'package:fe_flutter/firebase_options.dart';
-import 'package:fe_flutter/src/core/utils/app_logger.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'firebase_options.dart';
+// Import your app widget
 import 'src/core/app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  AppLogger.configureLogging();
+  await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(
     const ProviderScope(
-      child: fe_flutterApp(),
+      child: ChestScanApp(),
     ),
   );
 }

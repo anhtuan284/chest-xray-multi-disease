@@ -6,6 +6,7 @@ import 'package:fe_flutter/src/core/data/models/user_setting.dart';
 import 'package:fe_flutter/src/core/models/api_models.dart';
 import 'package:fe_flutter/src/core/models/disease_stats_models.dart';
 import 'package:fe_flutter/src/features/chat/models/chat_message.dart';
+import 'package:fe_flutter/src/features/patients/models/patient_models.dart';
 
 part 'serializers.g.dart';
 
@@ -20,7 +21,12 @@ part 'serializers.g.dart';
   UploadResponse,
   ChatMessage,
 
-  // Prediction models
+  // Patients models
+  PatientResponse,
+  Patient,
+  MediaFile,
+  MetaData,
+  MediaFormat,
 
   // Disease stats models
   WeeklyStatsResponse,
