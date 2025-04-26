@@ -59,6 +59,11 @@ jobs:
     - name: Install dependencies
       run: flutter pub get
 
+    - name: Run environment variable validation tests
+      run: |
+        echo "Running environment variable validation tests..."
+        flutter test test/env_config_test.dart --reporter expanded
+
     - name: Build Flutter web app
       run: flutter build web --release
 
