@@ -95,7 +95,7 @@ flutter:
     - assets/logos/
     - assets/animations/
     - assets/images/ai_avatar.png
-    - .env
+    - assets/dotenv
   fonts:
     - family: ArchivoExpanded
       fonts:

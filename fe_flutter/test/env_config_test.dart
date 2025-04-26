@@ -42,7 +42,7 @@ void main() {
     setUpAll(() async {
       try {
         // Load .env file
-        await dotenv.load(fileName: '.env');
+        await dotenv.load(fileName: 'assets/dotenv');
         logger.info('Environment file loaded successfully');
       } catch (e) {
         logger.severe('Failed to load .env file: $e');
