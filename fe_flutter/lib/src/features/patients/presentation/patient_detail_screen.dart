@@ -1,3 +1,4 @@
+import 'package:fe_flutter/src/core/widgets/loading_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -321,8 +322,21 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
   }
 
   void _loadImageAndShow(String imageUrl, String title) async {
+    late BuildContext dialogContext;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext innerContext) {
+        dialogContext = innerContext;
+        return const Center(child: LottieLoadingAnimation());
+      },
+    );
+
     try {
       final response = await http.get(Uri.parse(imageUrl));
+      Navigator.of(dialogContext).pop();
+
       if (response.statusCode == 200 && mounted) {
         showDialog(
           context: context,
@@ -340,6 +354,7 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
         }
       }
     } catch (e) {
+      Navigator.of(context).pop(); // Close the loading dialog
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: $e')),
@@ -350,29 +365,41 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
 
   Widget _buildPatientHeader() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(12),
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).primaryColor.withOpacity(0.8),
+            Colors.blueGrey.shade50
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-            height: 80,
-            width: 80,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade300,
-              shape: BoxShape.circle,
-            ),
-            child: const Center(
-              child: Icon(
-                Icons.person,
-                size: 40,
-                color: Colors.white,
+          CircleAvatar(
+            radius: 40,
+            backgroundColor: _patient!.healthStatusColor.withOpacity(0.2),
+            child: Text(
+              _patient!.fullName.isNotEmpty ? _patient!.fullName[0] : '?',
+              style: TextStyle(
+                fontSize: 36,
+                color: _patient!.healthStatusColor,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 20),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -380,25 +407,25 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                 Text(
                   _patient!.fullName,
                   style: const TextStyle(
-                    fontSize: 24,
+                    fontSize: 26,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 8),
                 Row(
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
+                          horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         color: _patient!.healthStatusColor,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(14),
                       ),
                       child: Text(
                         _patient!.heathStatus.toUpperCase(),
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 12,
+                          fontSize: 13,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -415,25 +442,34 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
 
   Widget _buildInfoCard(String title, IconData icon, List<Widget> children) {
     return Card(
-      elevation: 2,
+      elevation: 3,
+      margin: const EdgeInsets.symmetric(vertical: 6),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Icon(icon, size: 20, color: Colors.grey),
-                const SizedBox(width: 8),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.all(6),
+                  child: Icon(icon,
+                      size: 22, color: Theme.of(context).primaryColor),
+                ),
+                const SizedBox(width: 10),
                 Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 17,
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey,
+                    color: Colors.black87,
                   ),
                 ),
               ],
@@ -448,28 +484,29 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
 
   Widget _buildInfoRow(String label, String value, {Color? valueColor}) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
+      padding: const EdgeInsets.only(bottom: 14.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 100,
+            width: 120,
             child: Text(
               label,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 15,
                 color: Colors.grey.shade700,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 18),
           Expanded(
             child: Text(
               value,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 15,
                 fontWeight: FontWeight.bold,
-                color: valueColor,
+                color: valueColor ?? Colors.black87,
               ),
             ),
           ),

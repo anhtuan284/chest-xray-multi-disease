@@ -18,23 +18,45 @@ class PatientImageViewerDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      backgroundColor: Colors.grey[900],
       insetPadding: const EdgeInsets.all(16),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           AppBar(
-            title: Text(title),
+            backgroundColor: Colors.grey[900],
+            title: Text(title, style: const TextStyle(color: Colors.white)),
             automaticallyImplyLeading: false,
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(12),
-                topRight: Radius.circular(12),
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
               ),
             ),
             actions: [
               IconButton(
-                icon: const Icon(Icons.close),
+                icon: const Icon(Icons.download, color: Colors.white),
+                tooltip: 'Download',
+                onPressed: () {
+                  // TODO: Implement download logic
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Download not implemented')),
+                  );
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.share, color: Colors.white),
+                tooltip: 'Share',
+                onPressed: () {
+                  // TODO: Implement share logic
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Share not implemented')),
+                  );
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.close, color: Colors.white),
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ],
@@ -60,15 +82,16 @@ class PatientImageViewerDialog extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: ElevatedButton.icon(
               onPressed: () => _navigateToPredictionScreen(context),
-              icon: const Icon(Icons.analytics),
-              label: const Text('Analyse this image'),
+              icon: const Icon(Icons.analytics, color: Colors.white),
+              label: const Text('Analyse this image', style: TextStyle(color: Colors.white)),
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 48),
-                backgroundColor: Theme.of(context).primaryColor,
+                backgroundColor: Theme.of(context).colorScheme.secondary,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+                  borderRadius: BorderRadius.circular(10.0),
                 ),
+                elevation: 2,
               ),
             ),
           ),

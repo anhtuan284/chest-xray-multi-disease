@@ -25,7 +25,7 @@ class BottomNav extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final navNotifier = ref.read(navigationController.notifier);
+    ref.read(navigationController.notifier);
     final bool useSafeArea = isIOSPlatform;
 
     Widget buildNavigationBar() {
@@ -123,7 +123,7 @@ class BottomNav extends ConsumerWidget {
         Positioned(
           left: 0,
           right: 0,
-          top: -28,
+          top: -15,
           child: Center(child: buildFloatingActionButton()),
         ),
       ],

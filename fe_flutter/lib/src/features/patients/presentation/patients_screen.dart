@@ -113,27 +113,33 @@ class _PatientsScreenState extends State<PatientsScreen> {
 
   Widget _buildSearchBar() {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: TextField(
-        controller: _searchController,
-        decoration: InputDecoration(
-          hintText: 'Search patients...',
-          prefixIcon: const Icon(Icons.search),
-          suffixIcon: IconButton(
-            icon: const Icon(Icons.clear),
-            onPressed: () {
-              _searchController.clear();
-            },
+      padding: const EdgeInsets.all(12.0),
+      child: Material(
+        elevation: 2,
+        borderRadius: BorderRadius.circular(24),
+        child: TextField(
+          controller: _searchController,
+          decoration: InputDecoration(
+            hintText: 'Search patients...',
+            prefixIcon: const Icon(Icons.search),
+            suffixIcon: IconButton(
+              icon: const Icon(Icons.clear),
+              onPressed: () {
+                _searchController.clear();
+              },
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(24),
+              borderSide: BorderSide.none,
+            ),
+            filled: true,
+            fillColor: Colors.grey[100],
+            contentPadding: const EdgeInsets.symmetric(vertical: 0),
           ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.grey.shade300),
-          ),
-          contentPadding: const EdgeInsets.symmetric(vertical: 0),
+          onChanged: (value) {
+            // In a real app, this would filter the list or trigger a search API call
+          },
         ),
-        onChanged: (value) {
-          // In a real app, this would filter the list or trigger a search API call
-        },
       ),
     );
   }
@@ -203,7 +209,7 @@ class _PatientsScreenState extends State<PatientsScreen> {
     return RefreshIndicator(
       onRefresh: _fetchPatients,
       child: ListView.builder(
-        padding: const EdgeInsets.only(bottom: 80), // Space for FAB
+        padding: const EdgeInsets.only(bottom: 80, top: 8), // Space for FAB
         itemCount: _patients!.length,
         itemBuilder: (context, index) {
           final patient = _patients![index];
@@ -215,80 +221,97 @@ class _PatientsScreenState extends State<PatientsScreen> {
 
   Widget _buildPatientCard(Patient patient) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
         onTap: () => _navigateToPatientDetail(patient),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(16),
         child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Row(
-            children: [
-              _buildHealthStatusIndicator(patient),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      patient.fullName,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        const Icon(Icons.phone, size: 14, color: Colors.grey),
-                        const SizedBox(width: 4),
-                        Text(patient.formattedPhoneNumber),
-                      ],
-                    ),
-                    const SizedBox(height: 2),
-                    Row(
-                      children: [
-                        const Icon(Icons.email, size: 14, color: Colors.grey),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            patient.email,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontSize: 13),
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (patient.dateOfBirth != null)
-                      Row(
-                        children: [
-                          const Icon(Icons.calendar_today,
-                              size: 14, color: Colors.grey),
-                          const SizedBox(width: 4),
-                          Text(
-                            patient.formattedDOB,
-                            style: const TextStyle(fontSize: 13),
-                          ),
-                        ],
-                      ),
-                  ],
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: CircleAvatar(
+              radius: 28,
+              backgroundColor: patient.healthStatusColor.withOpacity(0.2),
+              child: Text(
+                patient.fullName.isNotEmpty ? patient.fullName[0] : '?',
+                style: TextStyle(
+                  fontSize: 24,
+                  color: patient.healthStatusColor,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              const Icon(Icons.chevron_right),
-            ],
+            ),
+            title: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    patient.fullName,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: patient.healthStatusColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    patient.heathStatus.toUpperCase(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    const Icon(Icons.phone, size: 14, color: Colors.grey),
+                    const SizedBox(width: 4),
+                    Text(patient.formattedPhoneNumber),
+                  ],
+                ),
+                Row(
+                  children: [
+                    const Icon(Icons.email, size: 14, color: Colors.grey),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        patient.email,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 13),
+                      ),
+                    ),
+                  ],
+                ),
+                if (patient.dateOfBirth != null)
+                  Row(
+                    children: [
+                      const Icon(Icons.cake, size: 14, color: Colors.grey),
+                      const SizedBox(width: 4),
+                      Text(
+                        patient.formattedDOB,
+                        style: const TextStyle(fontSize: 13),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+            trailing: const Icon(Icons.chevron_right, size: 28),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildHealthStatusIndicator(Patient patient) {
-    return Container(
-      width: 16,
-      height: 60,
-      decoration: BoxDecoration(
-        color: patient.healthStatusColor,
-        borderRadius: BorderRadius.circular(8),
       ),
     );
   }
