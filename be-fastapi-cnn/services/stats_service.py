@@ -8,7 +8,17 @@ import json
 class DiseaseStatsService:
     """Service for tracking and retrieving disease prediction statistics using SQLite"""
     
-    def __init__(self, data_path: str = "/app/data"):
+    def __init__(self, data_path: str = None):
+        # Default data path logic that works both in Docker and locally
+        if data_path is None:
+            # Check if /app exists (Docker environment)
+            if os.path.exists("/app") and os.access("/app", os.W_OK):
+                data_path = "/app/data"
+            else:
+                # Use local directory for development
+                current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                data_path = os.path.join(current_dir, "data")
+        
         self.data_path = data_path
         self.db_file = os.path.join(data_path, "disease_stats.db")
         self.stats_lock = threading.Lock()

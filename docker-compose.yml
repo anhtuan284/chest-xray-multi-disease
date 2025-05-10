@@ -24,11 +24,80 @@ services:
       - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
       - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
       - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+      - MODEL_PATH=${MODEL_PATH}
+      - REDIS_URL=${REDIS_URL}
+      # - MINIO_ENDPOINT=minio:9000
+      # - MINIO_ACCESS_KEY=minioadmin
+      # - MINIO_SECRET_KEY=minioadmin
+      - MINIO_ENDPOINT=${MINIO_ENDPOINT}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MINIO_BUCKET_NAME=chestscan
       - TZ=UTC
     volumes:
+      - ./be-fastapi-cnn:/app
       - ./be-fastapi-cnn/models:/app/models
-      - cnn-data:/app/data  # Add persistent volume for data
+      - cnn-data:/app/data
+    depends_on:
+      - minio
+      - celery-worker
     restart: unless-stopped
+
+  celery-worker:
+    build:
+      context: ./be-fastapi-cnn
+    command: celery -A celery_config worker -Q prediction_tasks --loglevel=info
+    volumes:
+      - ./be-fastapi-cnn:/app
+      - ./be-fastapi-cnn/models:/app/models
+      - cnn-data:/app/data
+    environment:
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+      - MODEL_PATH=${MODEL_PATH:-models/DenseNet121_epoch_30.keras}
+      - REDIS_URL=${REDIS_URL}
+      # - MINIO_ENDPOINT=minio:9000
+      # - MINIO_ACCESS_KEY=minioadmin
+      # - MINIO_SECRET_KEY=minioadmin
+      - MINIO_ENDPOINT=${MINIO_ENDPOINT}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MINIO_BUCKET_NAME=chestscan
+      - TZ=UTC
+
+    restart: unless-stopped
+
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    volumes:
+      - minio-data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    restart: unless-stopped
+
+  createbuckets:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      sleep 5;
+      /usr/bin/mc config host add myminio http://minio:9000 minioadmin minioadmin;
+      /usr/bin/mc mb myminio/chestscan --ignore-existing;
+      /usr/bin/mc policy set public myminio/chestscan;
+      exit 0;
+      "
 
   prometheus:
     image: prom/prometheus:v2.45.0
@@ -64,4 +133,5 @@ services:
 volumes:
   prometheus-data:
   grafana-data:
-  cnn-data:  # Add this volume
+  cnn-data:
+  minio-data:
